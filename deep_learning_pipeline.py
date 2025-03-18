@@ -24,15 +24,14 @@ class DeepLearningProcessor:
         # self.text_queries_crop = [text for text in self.text_queries]
 
         self.text_queries_crop = [
-                                "apple beside orange", 
-                                "wine in blue bottle", 
-                                "scissor", 
-                                "toilet paper roll", 
-                                "white bottle of milk", 
+                                "apple", 
+                                "blue bottle", 
                                 "coca cola",
-                                "black remote control"
+                                "red cup",
+                                "perrier soda "
                             ]
-        self.text_queries_position = [text + " on the table" for text in self.text_queries]
+        # self.text_queries_position = [text + " on the table" for text in self.text_queries_crop]
+        self.text_queries_position = self.text_queries_crop
 
         self.output_dir = "./segmentation_results"
         os.makedirs(self.output_dir, exist_ok=True)
@@ -51,7 +50,7 @@ class DeepLearningProcessor:
         union = np.logical_or(mask1, mask2).sum()
         return intersection / union if union > 0 else 0
 
-    def filter_small_masks(self, mask, min_area=1000):
+    def filter_small_masks(self, mask, min_area=200):
         """ 过滤掉面积小于 min_area 的目标 """
         num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(mask.astype(np.uint8), connectivity=8)
         filtered_mask = np.zeros_like(mask)
@@ -67,6 +66,29 @@ class DeepLearningProcessor:
         keypoints = sift.detect(image, None)
         keypoints = sorted(keypoints, key=lambda kp: kp.response, reverse=True)[:num_points]
         return [(int(kp.pt[0]), int(kp.pt[1])) for kp in keypoints]
+
+    def get_grid_keypoints(self, image, num_points=20):
+        image = np.array(image.convert("L"))  # 转换为灰度图
+        height, width = image.shape
+        
+        # 选取下半部分区域
+        y_start = height // 2  
+        
+        # 计算网格的行列数
+        grid_size = int(np.sqrt(num_points))
+        step_x = width // grid_size
+        step_y = (height - y_start) // grid_size
+        
+        keypoints = []
+        for i in range(grid_size):
+            for j in range(grid_size):
+                x = int((i + 0.5) * step_x)
+                y = int(y_start + (j + 0.5) * step_y)
+                keypoints.append((x, y))
+                if len(keypoints) >= num_points:
+                    return keypoints
+        
+        return keypoints
 
     def crop_masked_region(self, image, mask):
         """在原始图像上裁剪 mask 区域，并返回裁剪后的图像"""
@@ -89,10 +111,12 @@ class DeepLearningProcessor:
         keypoints: [(x, y), (x, y), ...]
         save_path: 保存路径
         """
+        print("len", len(keypoints))
+        print("keypoints", keypoints)
         image_cv = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
         
         for (x, y) in keypoints:
-            cv2.circle(image_cv, (x, y), radius=5, color=(0, 255, 0), thickness=-1)
+            cv2.circle(image_cv, (int(x), int(y)), radius=5, color=(0, 255, 0), thickness=-1)
         
         cv2.imwrite(save_path, image_cv)
 
@@ -121,7 +145,7 @@ class DeepLearningProcessor:
         image_resized = image_pil.resize((256, 256))
         image_tensor = transforms.ToTensor()(image_resized).unsqueeze(0).to(self.device)
 
-        keypoints = self.get_sift_keypoints(image_pil, num_points=20)
+        keypoints = self.get_grid_keypoints(image_resized, num_points=10)
         self.visualize_sift_keypoints(image_resized, keypoints, os.path.join(self.output_dir, "sift_keypoints.jpg"))
         
         all_points = []
@@ -141,7 +165,7 @@ class DeepLearningProcessor:
             # predicted_logits shape: [B=1, 1, N, H, W]
             # predicted_iou    shape: [B=1, N]
 
-        print("len(input_points_list) = ", len(input_points_list))
+        print("len(keypoints) = ", len(keypoints))
 
         predicted_masks = []
         for idx in range(len(keypoints)):
@@ -234,7 +258,7 @@ class DeepLearningProcessor:
 
             print(f"文本 {text_query} 的最好相似度: {best_similarity:.4f}")
             # 设个阈值，用于决定是否真正认为这个文本匹配到了物体
-            if best_similarity > 0.18:
+            if best_similarity > 0.195:
                 top_matches.append((best_match, best_mask, text_query))
 
         time_end = time.time()
@@ -268,6 +292,7 @@ class DeepLearningProcessor:
             (244, 164, 96),   # 砂岩色
         ]
 
+        print("image_pil", type(image_pil))
         draw = ImageDraw.Draw(image_pil)
         for idx, (match, mask, label) in enumerate(top_matches):
             contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -276,8 +301,7 @@ class DeepLearningProcessor:
                 points = [tuple(pt[0]) for pt in contour]
                 draw.line(points + [points[0]], fill=color, width=3)
             # 在图像上写上 label
-            draw.text((10, 30 * idx), label, fill=color, 
-                    font=ImageFont.truetype("arial.ttf", 40))
+            draw.text((10, 30 * idx), label, fill=color, font=ImageFont.load_default())
 
         best_match_path = os.path.join(self.output_dir, "best_match_labeled.jpg")
         image_pil.save(best_match_path)
