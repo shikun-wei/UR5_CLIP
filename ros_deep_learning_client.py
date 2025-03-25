@@ -8,10 +8,9 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import sys
 import os
-import threading
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from scripts.ros_image_subscriber import ROSImageSubscriber  # Importing image subscriber
+from scripts.ros_image_subscriber import ROSImageSubscriber  
 
 class ROSDeepLearningClient:
     def __init__(self, server_ip="172.17.0.1", port=9999):
@@ -21,27 +20,37 @@ class ROSDeepLearningClient:
         self.server_ip = server_ip
         self.port = port
 
-    def send_image_to_server(self, image_pil):
-        """ 发送图像到服务器，并等待服务器处理完成 """
+    def send_images_to_server(self, rgb_image, depth_image):
+        """ 发送 RGB 图像和深度图到服务器 """
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             client.connect((self.server_ip, self.port))
 
-            # Convert PIL Image to NumPy Array
-            image_np = np.array(image_pil)
-            image_np = cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
+            # 转换 RGB 图像
+            rgb_np = np.array(rgb_image)
+            rgb_np = cv2.cvtColor(rgb_np, cv2.COLOR_RGB2BGR)
 
-            # 压缩图像为 JPEG
-            success, encoded_image = cv2.imencode('.jpg', image_np, [cv2.IMWRITE_JPEG_QUALITY, 90])
-            if not success:
-                rospy.logerr("[ERROR] Image encoding failed!")
+            # 压缩 RGB 图像
+            success_rgb, encoded_rgb = cv2.imencode('.jpg', rgb_np, [cv2.IMWRITE_JPEG_QUALITY, 90])
+            if not success_rgb:
+                rospy.logerr("[ERROR] RGB Image encoding failed!")
                 return
             
-            data = encoded_image.tobytes()
-            data_size = struct.pack(">L", len(data))  # 发送 4 字节表示数据大小
+            # 压缩深度图（使用 PNG 保留信息）
+            success_depth, encoded_depth = cv2.imencode('.png', depth_image)
+            if not success_depth:
+                rospy.logerr("[ERROR] Depth Image encoding failed!")
+                return
 
-            rospy.loginfo(f"[INFO] Sending image of size: {len(data)} bytes")
-            client.sendall(data_size + data)  # 发送数据大小和图像数据
+            # 发送 RGB 数据大小
+            client.sendall(struct.pack(">L", len(encoded_rgb.tobytes())))
+            client.sendall(encoded_rgb.tobytes())
+
+            # 发送 深度图 数据大小
+            client.sendall(struct.pack(">L", len(encoded_depth.tobytes())))
+            client.sendall(encoded_depth.tobytes())
+
+            rospy.loginfo("[INFO] Images sent successfully.")
 
             # ✅ 确保正确接收 "DONE"
             while True:
@@ -51,7 +60,7 @@ class ROSDeepLearningClient:
                     break
                 if done_signal == b"DONE":
                     rospy.loginfo("[INFO] Server finished processing. Ready for next image.")
-                    break  # ✅ 收到 DONE 后退出循环
+                    break
                 rospy.logwarn(f"[WARNING] Unexpected response from server: {done_signal}")
 
         except Exception as e:
@@ -62,20 +71,18 @@ class ROSDeepLearningClient:
             rospy.loginfo("[INFO] Connection closed.")
 
     def run(self):
-        """ 逐步发送图像，等待服务器处理完成后再发送下一张 """
-        rate = rospy.Rate(0.5)  # 订阅频率，防止过快发送
+        """ 逐步发送图像 """
+        rate = rospy.Rate(0.5)
         while not rospy.is_shutdown():
-            latest_image = self.image_subscriber.get_latest_image()
-            if latest_image is not None:
-                rospy.loginfo("[INFO] Sending latest image to server.")
-                self.send_image_to_server(latest_image)
+            latest_rgb, latest_depth = self.image_subscriber.get_latest_images()
+            if latest_rgb is not None and latest_depth is not None:
+                rospy.loginfo("[INFO] Sending RGB & Depth image to server.")
+                self.send_images_to_server(latest_rgb, latest_depth)
             else:
-                rospy.logwarn("[WARNING] No image received yet.")
-            rate.sleep()  # 控制发送间隔
-
+                rospy.logwarn("[WARNING] No images received yet.")
+            rate.sleep()
 
 if __name__ == "__main__":
-    rospy.init_node("deep_learning_client", anonymous=True)  # Initialize ROS node
     rospy.loginfo("[INFO] ROS Deep Learning Client started.")
     client = ROSDeepLearningClient()
     client.run()
