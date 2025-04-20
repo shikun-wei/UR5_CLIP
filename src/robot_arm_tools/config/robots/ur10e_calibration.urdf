@@ -1,0 +1,299 @@
+<robot name="ur10e_robot">
+  <transmission name="shoulder_pan_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="shoulder_pan_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="shoulder_pan_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="shoulder_lift_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="shoulder_lift_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="shoulder_lift_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="elbow_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="elbow_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="elbow_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="wrist_1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wrist_1_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wrist_1_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="wrist_2_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wrist_2_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wrist_2_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="wrist_3_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wrist_3_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wrist_3_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <link name="base_link" />
+  <link name="base_link_inertia">
+    <visual>
+      <origin rpy="0 0 3.141592653589793" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/visual/base.dae" />
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 3.141592653589793" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/collision/base.stl" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="4.0" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <inertia ixx="0.0061063308908" ixy="0.0" ixz="0.0" iyy="0.0061063308908" iyz="0.0"
+        izz="0.01125" />
+    </inertial>
+  </link>
+  <link name="shoulder_link">
+    <visual>
+      <origin rpy="0 0 3.141592653589793" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/visual/shoulder.dae" />
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 3.141592653589793" xyz="0 0 0" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/collision/shoulder.stl" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="7.778" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <inertia ixx="0.03147431257693659" ixy="0.0" ixz="0.0" iyy="0.03147431257693659" iyz="0.0"
+        izz="0.021875624999999996" />
+    </inertial>
+  </link>
+  <link name="upper_arm_link">
+    <visual>
+      <origin rpy="1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0.1762" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/visual/upperarm.dae" />
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0.1762" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/collision/upperarm.stl" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="12.93" />
+      <origin rpy="0 1.5707963267948966 0" xyz="-0.306 0.0 0.175" />
+      <inertia ixx="0.42175380379841093" ixy="0.0" ixz="0.0" iyy="0.42175380379841093" iyz="0.0"
+        izz="0.03636562499999999" />
+    </inertial>
+  </link>
+  <link name="forearm_link">
+    <visual>
+      <origin rpy="1.5707963267948966 0    -1.5707963267948966" xyz="0 0 0.0393" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/visual/forearm.dae" />
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.5707963267948966    0 -1.5707963267948966" xyz="0 0 0.0393" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/collision/forearm.stl" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="3.87" />
+      <origin rpy="0 1.5707963267948966 0" xyz="-0.285775 0.0 0.0393" />
+      <inertia ixx="0.11079302548902206" ixy="0.0" ixz="0.0" iyy="0.11079302548902206" iyz="0.0"
+        izz="0.010884375" />
+    </inertial>
+  </link>
+  <link name="wrist_1_link">
+    <visual>
+      <origin rpy="1.5707963267948966 0 0" xyz="0 0 -0.135" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/visual/wrist1.dae" />
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.5707963267948966 0 0" xyz="0 0 -0.135" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/collision/wrist1.stl" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.96" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <inertia ixx="0.005108247956699999" ixy="0.0" ixz="0.0" iyy="0.005108247956699999" iyz="0.0"
+        izz="0.005512499999999999" />
+    </inertial>
+  </link>
+  <link name="wrist_2_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 -0.12" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/visual/wrist2.dae" />
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7    0.7 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 -0.12" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/collision/wrist2.stl" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.96" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <inertia ixx="0.005108247956699999" ixy="0.0" ixz="0.0" iyy="0.005108247956699999" iyz="0.0"
+        izz="0.005512499999999999" />
+    </inertial>
+  </link>
+  <link name="wrist_3_link">
+    <visual>
+      <origin rpy="1.5707963267948966 0 0" xyz="0 0 -0.1168" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/visual/wrist3.dae" />
+      </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.5707963267948966 0 0" xyz="0 0 -0.1168" />
+      <geometry>
+        <mesh filename="/opt/ros/melodic/share/ur_description/meshes/ur10e/collision/wrist3.stl" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.202" />
+      <origin rpy="0 0 0" xyz="0.0 0.0 -0.025" />
+      <inertia ixx="0.00014434577559500002" ixy="0.0" ixz="0.0" iyy="0.00014434577559500002"
+        iyz="0.0" izz="0.00020452500000000002" />
+    </inertial>
+  </link>
+  <joint name="base_link-base_link_inertia" type="fixed">
+    <parent link="base_link" />
+    <child link="base_link_inertia" />
+    <origin rpy="0 0 3.141592653589793" xyz="0 0 0" />
+  </joint>
+  <joint name="shoulder_pan_joint" type="revolute">
+    <parent link="base_link_inertia" />
+    <child link="shoulder_link" />
+    <origin rpy="0 0 -5.908067881332281e-07" xyz="0 0 0.180915676214146" />
+    <axis xyz="0 0 1" />
+    <limit effort="330.0" lower="-6.283185307179586" upper="6.283185307179586"
+      velocity="2.0943951023931953" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <joint name="shoulder_lift_joint" type="revolute">
+    <parent link="shoulder_link" />
+    <child link="upper_arm_link" />
+    <origin rpy="1.571618147392995 0 -8.692081469597201e-06" xyz="-0.0001165477761455351    0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="330.0" lower="-6.283185307179586" upper="6.283185307179586"
+      velocity="2.0943951023931953" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <joint name="elbow_joint" type="revolute">
+    <parent link="upper_arm_link" />
+    <child link="forearm_link" />
+    <origin rpy="3.13608551061523 -3.140485009665982 3.141590559473619"
+      xyz="-0.6118162555594727 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="150.0" lower="-3.141592653589793" upper="3.141592653589793"
+      velocity="3.141592653589793" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <joint name="wrist_1_joint" type="revolute">
+    <parent link="forearm_link" />
+    <child link="wrist_1_link" />
+    <origin rpy="3.141350986966436 -3.140166932281963 3.141588703280251"
+      xyz="-0.5714984840890653 4.19100185768517e-05 0.1734207942280107" />
+    <axis xyz="0 0 1" />
+    <limit effort="56.0" lower="-6.283185307179586" upper="6.283185307179586"
+      velocity="3.141592653589793" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <joint name="wrist_2_joint" type="revolute">
+    <parent link="wrist_1_link" />
+    <child link="wrist_2_link" />
+    <origin rpy="1.570430926785284    0 9.254297713839897e-07"
+      xyz="3.049186026058469e-05 -0.1199505458747265 4.382993256633904e-05" />
+    <axis xyz="0 0 1" />
+    <limit effort="56.0" lower="-6.283185307179586" upper="6.283185307179586"
+      velocity="3.141592653589793" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <joint name="wrist_3_joint" type="revolute">
+    <parent link="wrist_2_link" />
+    <child link="wrist_3_link" />
+    <origin rpy="1.571875847620505 3.141592653589793 -3.141592590112388"
+      xyz="-3.097433416240218e-06 0.1157149173575875 0.0001249167116455941" />
+    <axis xyz="0 0 1" />
+    <limit effort="56.0" lower="-6.283185307179586" upper="6.283185307179586"
+      velocity="3.141592653589793" />
+    <dynamics damping="0" friction="0" />
+  </joint>
+  <link name="base" />
+  <joint name="base_link-base_fixed_joint" type="fixed">
+    <origin rpy="0 0 3.141592653589793" xyz="0 0 0" />
+    <parent link="base_link" />
+    <child link="base" />
+  </joint>
+  <link name="flange" />
+  <joint name="wrist_3-flange" type="fixed">
+    <parent link="wrist_3_link" />
+    <child link="flange" />
+    <origin rpy="0 -1.5707963267948966 -1.5707963267948966" xyz="0 0 0" />
+  </joint>
+  <link name="tool0" />
+  <joint name="flange-tool0" type="fixed">
+    <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0" />
+    <parent link="flange" />
+    <child link="tool0" />
+  </joint>
+</robot>

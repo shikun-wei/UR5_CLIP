@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="$1">
+
+    <xacro:arg name="robot_name" default="panda" />
+    <xacro:arg name="safety_distance" default="$8"/>
+    <xacro:arg name="robot_flange_link" default="panda_link8"/>
+
+    <xacro:include filename="$(find robot_arm_tools)/config/tools/$1/$1.xacro"/>
+    <xacro:$1 robot_name="$(arg robot_name)" xyz="$2 $3 $4" rpy="$5 $6 $7" connected_to="$(arg robot_flange_link)" safety_distance="$(arg safety_distance)"/>
+</robot>

@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<launch>
+    <!--ADD ONS PARAMETERS -->
+    <arg name="use_rviz_gui" default="false"/>
+    <arg name="use_gazebo_gui" default="false"/>
+
+    <!-- ROBOT PARAMETERS -->
+    <param name="robotName" value="panda"/>
+    <param name="groupName" value="panda_arm"/>
+    <param name="collisionBaseLinksNames" type="yaml" value="[panda_link0,panda_link1,panda_link0_sc,panda_link1_sc]"/>
+
+    <arg name="initial_configuration_name" value="ready"/>
+    <param name="initialConfigurationName" value="$(arg initial_configuration_name)"/>
+
+    <arg name="kinematics_solver" default="bio_ik/BioIKKinematicsPlugin"/>
+    <!--<arg name="kinematics_solver" default="kdl_kinematics_plugin/KDLKinematicsPlugin"/>-->
+
+    <arg name="planner_name" default="BiTRRT"/>
+    <param name="plannerName" value="$(arg planner_name)"/>
+    <arg name="planner_objective" default="PathLengthOptimizationObjective"/>
+    <param name="plannerObjective" value="$(arg planner_objective)"/>
+    <arg name="planning_time" default="5.0"/>
+    <param name="planningTime" value="$(arg planning_time)"/>
+
+    <!-- ROBOT SAFETY PARAMETERS -->
+    <arg name="safety_distance" default="0.03"/>
+    <!-- Need to add safety_distance as xacro param in franka_robot.xacro to enforce safety_distance for robot self-collisions !-->
+
+    <!-- Sensitive joints/force limits... -->
+    <rosparam command="load" file="$(find robot_arm_tools)/config/robots/panda_soft_joints_limits.yaml" ns="robot_description_planning"/>
+
+    <param name="/franka_control/collision_config/lower_force_thresholds_nominal" type="yaml" value="[20.0, 20.0, 20.0, 25.0, 25.0, 25.0]"/>    <!--Contact-->
+    <param name="/franka_control/collision_config/upper_force_thresholds_nominal" type="yaml" value="[30.0, 30.0, 30.0, 37.5, 37.5, 37.5]"/>    <!--Collision-->
+    <param name="/position_joint_trajectory_controller/stop_trajectory_duration" value="0.5"/> <!--Pause stop-->
+
+    <!-- ROBOT TOOL PARAMETERS -->
+    <arg name="tool_name" default="none"/>
+    <param name="toolName" value="$(arg tool_name)"/>
+
+    <arg name="load_gripper" value="false" unless="$(eval arg('tool_name') == 'gripper')"/>
+    <arg name="load_gripper" value="true" if="$(eval arg('tool_name') == 'gripper')"/>
+
+    <arg name="end_effector_name" value="panda_$(arg tool_name)" unless="$(eval arg('tool_name') == 'none' or arg('tool_name') == 'gripper')"/>
+    <arg name="end_effector_name" value="panda_hand_tcp" if="$(eval arg('tool_name') == 'gripper')"/> 
+    <arg name="end_effector_name" value="panda_link8" if="$(eval arg('tool_name') == 'none')"/> 
+    <param name="endEffectorName" value="$(arg end_effector_name)"/>
+
+    <!-- ROBOT CALIBRATION PARAMETERS -->
+    <arg name="calibration" default="false"/>
+    <param name="calibration" value="$(arg calibration)"/>
+
+    <arg name="calibrated_model_file" default="" unless="$(arg calibration)"/>
+    <arg name="calibrated_model_file" default="$(find robot_arm_calibration)/config/calibratedModels/panda_marker3D/naive_5/greedy/measurements/GN/CalibratedModel.yaml" if="$(arg calibration)"/>
+
+    <rosparam file="$(arg calibrated_model_file)" command="load" if="$(arg calibration)"/>
+
+    <!-- EXECUTION PARAMETERS -->
+    <node pkg="robot_arm_tools" name="pause_button" type="pause_button"/>
+    <arg name="simulation" default="true"/>
+    <param name="simulation" value="$(arg simulation)"/>
+    <arg name="robot_ip" default="147.250.35.11" />
+    <param name="robotIP" value="$(arg robot_ip)"/>
+    <arg name="gazebo" default="false"/>
+
+    <!-- LOCALISATION PARAMETERS -->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_0" args="0 0 0 0 0 0 world panda_link0" />--> <!--Not needed here-->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_1" args="0 0 0 0 0 0 world map" /> 
+
+    <!-- LAUNCH INCLUDES -->
+
+    <!-- MoveIt based simulation -->
+    <group if="$(eval arg('simulation') and not arg('gazebo'))">
+        <include file="$(find panda_moveit_config)/launch/demo.launch" pass_all_args="true">
+            <arg name="load_gripper" value="$(arg load_gripper)"/>
+            <arg name="use_rviz" value="$(arg use_rviz_gui)"/>
+        </include>
+
+        <param name="/move_group/initial" type="yaml" value="[{group: panda_arm, pose: $(arg initial_configuration_name)}]"/>
+    </group>
+
+    <!-- Real hardware execution -->
+    <group unless="$(arg simulation)">
+        <include file="$(find panda_moveit_config)/launch/franka_control.launch" pass_all_args="true">
+            <arg name="load_gripper" value="$(arg load_gripper)"/>
+            <arg name="robot_ip" default="$(arg robot_ip)" />
+            <arg name="use_rviz" value="$(arg use_rviz_gui)"/>
+            <arg name="xacro_args" value="safety_distance:=$(arg safety_distance)"/>
+        </include>
+    </group>
+
+    <!-- Gazebo based simulation -->
+    <group if="$(eval arg('simulation') and arg('gazebo'))">
+        <include file="$(find panda_moveit_config)/launch/demo_gazebo.launch" if="$(eval arg('simulation') and arg('gazebo'))" pass_all_args="true">
+            <arg name="use_gripper" value="$(arg load_gripper)"/>
+            <arg name="use_rviz" value="$(arg use_rviz_gui)"/>
+            <arg name="gazebo_gui" value="$(arg use_gazebo_gui)"/>
+            <arg name="transmission" value="position" />
+            <arg name="xacro_args" value="safety_distance:=$(arg safety_distance)"/>
+        </include>
+    </group>
+
+    <!-- Weird franka_gazebo behaviour... -->
+    <node name="initialized" pkg="robot_arm_tools" type="Initialized.sh" if="$(eval arg('simulation') and arg('gazebo'))"/>  
+
+    <!-- Overwritting kinematics plugin for calibration -->
+    <!--<param name="robot_description_kinematics/panda_arm/kinematics_solver" value="robot_kinematics_plugin" if="$(arg calibration)"/>-->
+    <param name="robot_description_kinematics/panda_arm/kinematics_solver" value="$(arg kinematics_solver)"/>
+
+    <param name="robot_description_kinematics/panda_arm/mode" value="gd_c"/> 
+    <param name="robot_description_kinematics/panda_arm/threads" value="14"/>
+    <!--bio2_memetic-->    
+
+    <param name="robot_description_kinematics/panda_arm/kinematics_solver_search_resolution" value="0.00001"/>  <!--Not used for bio_ik-->
+    <param name="robot_description_kinematics/panda_arm/dpos" value="0.00001"/>  <!--Used for bio_ik-->
+    <param name="robot_description_kinematics/panda_arm/drot" value="0.00001"/>  <!--Used for bio_ik-->
+    <param name="robot_description_kinematics/panda_arm/dtwist" value="0.00001"/>  <!--Used for bio_ik-->
+
+    <param name="robot_description_kinematics/panda_arm/kinematics_solver_timeout" value="5.0"/>
+
+    <!-- Overwritting robot_description and robot_description_semantic -->
+    <!-- TODO Fix multiple transmission joints when parsing URDF for calibration -->
+    <param name="robot_description" command="/bin/bash $(find robot_arm_tools)/scripts/GetRobotDescription.sh 'robot_arm_tools Setup_panda.launch simulation:=$(arg simulation) gazebo:=$(arg gazebo) safety_distance:=$(arg safety_distance)' '$(find robot_arm_tools)/config/tools/$(arg tool_name)/$(arg tool_name).urdf.xacro robot_name:=panda safety_distance:=$(arg safety_distance)' '$(arg calibrated_model_file)'" unless="$(eval arg('gazebo') or (arg('tool_name') == 'none' and not arg('calibration')) or arg('tool_name') == 'gripper')"/>
+    <param name="robot_description_semantic" command="/bin/bash $(find robot_arm_tools)/scripts/GetRobotDescriptionSemantic.sh 'robot_arm_tools Setup_panda.launch simulation:=$(arg simulation) gazebo:=$(arg gazebo) safety_distance:=$(arg safety_distance)' '$(find robot_arm_tools)/config/tools/$(arg tool_name)/$(arg tool_name).urdf.xacro robot_name:=panda safety_distance:=$(arg safety_distance)' '$(arg end_effector_name)' '$(arg calibrated_model_file)'" unless="$(eval arg('gazebo') or (arg('tool_name') == 'none' and not arg('calibration')) or arg('tool_name') == 'gripper')"/>
+
+</launch>

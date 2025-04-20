@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="marker3D">
+  <!-- safety_distance: Minimum safety distance in [m] by which the collision volumes are expanded and which is enforced during robot motions -->
+  <xacro:macro name="marker3D" params="connected_to:='' robot_name:='' rpy:='0 0 0' xyz:='0 0 0' safety_distance:=0">
+
+    <xacro:unless value="${connected_to == ''}">
+      <joint name="${robot_name}_marker3D_joint" type="fixed">
+        <parent link="${connected_to}"/>
+        <child link="${robot_name}_marker3D"/>
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+      </joint>
+    </xacro:unless>
+
+    <link name="${robot_name}_marker3D">
+      <visual>
+        <geometry>
+          <mesh filename="file://$(find robot_arm_tools)/config/tools/marker3D/marker3D.stl"/>
+        </geometry>
+      </visual>
+			<collision>
+				<origin xyz="0.047 -0.052 0.011" rpy="1.571 0.0 -2.492"/>
+				<geometry>
+					<box size="${0.016+safety_distance/2} ${0.024+safety_distance/2} ${0.094+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.055 0.042 0.016" rpy="1.57 0.005 -0.918"/>
+				<geometry>
+					<box size="${0.009+safety_distance/2} ${0.013+safety_distance/2} ${0.055+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="-0.052 -0.04 0.011" rpy="-1.571 0.012 -0.898"/>
+				<geometry>
+					<box size="${0.01+safety_distance/2} ${0.024+safety_distance/2} ${0.076+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="-0.003 -0.034 0.011" rpy="0.0 1.571 0.0"/>
+				<geometry>
+					<box size="${0.024+safety_distance/2} ${0.038+safety_distance/2} ${0.041+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.007 0.01 0.047" rpy="3.142 0.0 -2.479"/>
+				<geometry>
+					<box size="${0.016+safety_distance/2} ${0.04+safety_distance/2} ${0.045+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.007 0.007 0.012" rpy="-3.142 1.571 0.0"/>
+				<geometry>
+					<box size="${0.025+safety_distance/2} ${0.044+safety_distance/2} ${0.078+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="-0.003 0.031 0.011" rpy="1.571 0.0 1.57"/>
+				<geometry>
+					<box size="${0.003+safety_distance/2} ${0.024+safety_distance/2} ${0.034+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="-0.03 0.066 0.017" rpy="1.572 -0.001 0.43"/>
+				<geometry>
+					<box size="${0.009+safety_distance/2} ${0.013+safety_distance/2} ${0.078+safety_distance/2}"/>
+				</geometry>
+			</collision>
+    </link>
+    
+  </xacro:macro>
+</robot>

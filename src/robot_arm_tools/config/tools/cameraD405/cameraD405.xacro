@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="cameraD405">
+  <!-- safety_distance: Minimum safety distance in [m] by which the collision volumes are expanded and which is enforced during robot motions -->
+  <xacro:macro name="cameraD405" params="connected_to:='' robot_name:='' rpy:='0 0 0' xyz:='0 0 0' safety_distance:=0">
+
+    <xacro:unless value="${connected_to == ''}">
+      <joint name="${robot_name}_cameraD405_joint" type="fixed">
+        <parent link="${connected_to}"/>
+        <child link="${robot_name}_cameraD405"/>
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+      </joint>
+    </xacro:unless>
+
+    <link name="${robot_name}_cameraD405">
+      <visual>
+        <geometry>
+          <mesh filename="file://$(find robot_arm_tools)/config/tools/cameraD405/cameraD405.stl"/>
+        </geometry>
+      </visual>
+			<collision>
+				<origin xyz="-0.0 -0.042 -0.015" rpy="-1.571 1.571 0.0"/>
+				<geometry>
+					<box size="${0.011+safety_distance/2} ${0.026+safety_distance/2} ${0.038+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.0 0.0 -0.039" rpy="0.0 -0.0 0.0"/>
+				<geometry>
+					<cylinder radius="${0.031+safety_distance/2}" length="${0.013+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="-0.0 -0.0 -0.028" rpy="-3.142 1.571 0.0"/>
+				<geometry>
+					<box size="${0.009+safety_distance/2} ${0.03+safety_distance/2} ${0.03+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="-0.0 -0.001 -0.012" rpy="-1.514 1.571 -3.085"/>
+				<geometry>
+					<box size="${0.024+safety_distance/2} ${0.043+safety_distance/2} ${0.045+safety_distance/2}"/>
+				</geometry>
+			</collision>
+    </link>
+    
+  </xacro:macro>
+</robot>

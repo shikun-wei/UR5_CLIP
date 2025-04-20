@@ -1,0 +1,5 @@
+<library path="lib/librobot_kinematics_plugin">
+  <class name="robot_kinematics_plugin" type="RobotKinematicsPlugin" base_class_type="kinematics::KinematicsBase">
+    <description>Custom robot kinematics plugin for advanced calibration !</description>
+  </class>
+</library>

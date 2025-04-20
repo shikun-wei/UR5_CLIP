@@ -1,0 +1,120 @@
+dome:
+  type: mesh
+  file_name: package://robot_arm_tools/config/environments/simplify_dome_with_margins.stl
+  pose:
+    x: 0.0
+    y: 0.0
+    z: 0.288
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+  collisions: true
+  robot_base_collisions: false
+
+leds:
+  type: mesh
+  file_name: package://robot_arm_tools/config/environments/simplify_leds_panels_with_margins.stl
+  pose:
+    x: 0.0
+    y: 0.0
+    z: 1.648
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+  collisions: true
+  robot_base_collisions: false
+
+table:
+  type: cylinder
+  pose:
+    x: 0.0
+    y: 0.0
+    z: 1.496
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+  size:
+    radius: 0.75
+    height: 0.44
+  collisions: true
+  robot_base_collisions: false
+
+camera1:
+  type: box
+  pose:
+    x: -0.875
+    y: 0.875
+    z: 0.95
+    rx: 0.0
+    ry: 0.0
+    rz: -0.7854
+  size:
+    dx: 0.2
+    dy: 0.75
+    dz: 0.75
+  collisions: true
+  robot_base_collisions: false
+
+camera2:
+  type: box
+  pose:
+    x: -0.875
+    y: -0.875
+    z: 0.95
+    rx: 0.0
+    ry: 0.0
+    rz: 0.7854
+  size:
+    dx: 0.15
+    dy: 0.75
+    dz: 0.75
+  collisions: true
+  robot_base_collisions: false
+
+camera3:
+  type: box
+  pose:
+    x: 0.875
+    y: 0.875
+    z: 0.95
+    rx: 0.0
+    ry: 0.0
+    rz: 0.7854
+  size:
+    dx: 0.1
+    dy: 0.75
+    dz: 0.75
+  collisions: true
+  robot_base_collisions: false
+
+camera4:
+  type: box
+  pose:
+    x: 0.875
+    y: -0.875
+    z: 0.95
+    rx: 0.0
+    ry: 0.0
+    rz: -0.7854
+  size:
+    dx: 0.1
+    dy: 0.75
+    dz: 0.75
+  collisions: true
+  robot_base_collisions: false
+
+camera5:
+  type: box
+  pose:
+    x: 0.0
+    y: -1.1
+    z: 1.0
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+  size:
+    dx: 0.5
+    dy: 0.1
+    dz: 0.75
+  collisions: true
+  robot_base_collisions: false

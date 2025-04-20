@@ -1,0 +1,69 @@
+supportL:
+  type: box
+  pose:
+    x: -0.051
+    y: 0.0
+    z: -0.505
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+  size:
+    dx: 0.80
+    dy: 0.80
+    dz: 0.45
+  collisions: true
+  robot_base_collisions: false
+
+supportU:
+  type: box
+  pose:
+    x: -0.051
+    y: 0.0
+    z: -0.365
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+  size:
+    dx: 0.1
+    dy: 0.1
+    dz: 0.73
+  collisions: true
+  robot_base_collisions: false
+
+supportM:
+  type: box
+  pose:
+    x: -0.051
+    y: 0.06
+    z: -0.108
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+  size:
+    dx: 0.45
+    dy: 0.02
+    dz: 0.125
+  collisions: true
+  robot_base_collisions: false
+
+ground:
+  type: border
+  axis: z
+  offset: -0.73
+  collisions: true
+
+base:
+  type: box
+  pose:
+    x: -0.051
+    y: 0.0
+    z: -0.015
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+  size:
+    dx: 0.21
+    dy: 0.28
+    dz: 0.03
+  collisions: true
+  robot_base_collisions: false

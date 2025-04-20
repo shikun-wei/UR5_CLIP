@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="microGRAS">
+  <!-- safety_distance: Minimum safety distance in [m] by which the collision volumes are expanded and which is enforced during robot motions -->
+  <xacro:macro name="microGRAS" params="connected_to:='' robot_name:='' rpy:='0 0 0' xyz:='0 0 0' safety_distance:=0">
+
+    <xacro:unless value="${connected_to == ''}">
+      <joint name="${robot_name}_microGRAS_joint" type="fixed">
+        <parent link="${connected_to}"/>
+        <child link="${robot_name}_microGRAS"/>
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+      </joint>
+    </xacro:unless>
+
+    <link name="${robot_name}_microGRAS">
+      <visual>
+        <geometry>
+          <mesh filename="file://$(find robot_arm_tools)/config/tools/microGRAS/microGRAS.stl"/>
+        </geometry>
+      </visual>
+			<collision>
+				<origin xyz="-0.11 0.005 -0.096" rpy="0.0 -0.432 -1.571"/>
+				<geometry>
+					<box size="${0.023+safety_distance/2} ${0.044+safety_distance/2} ${0.059+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.003 0.0 -0.086" rpy="0.0 0.0 -1.565"/>
+				<geometry>
+					<box size="${0.022+safety_distance/2} ${0.023+safety_distance/2} ${0.175+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="-0.166 0.012 -0.083" rpy="1.571 0.0 -1.571"/>
+				<geometry>
+					<box size="${0.036+safety_distance/2} ${0.065+safety_distance/2} ${0.069+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="-0.048 0.005 -0.121" rpy="3.142 0.0 -1.571"/>
+				<geometry>
+					<box size="${0.027+safety_distance/2} ${0.08+safety_distance/2} ${0.104+safety_distance/2}"/>
+				</geometry>
+			</collision>
+    </link>
+    
+  </xacro:macro>
+</robot>

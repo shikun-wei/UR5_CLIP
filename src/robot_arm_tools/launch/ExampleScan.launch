@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<launch>
+
+    <!-- GENERAL ARGUMENTS -->
+    <arg name="robot_name" default="panda"/>
+    <arg name="tool_name" default="none"/>
+    <arg name="simulation" default="true"/>
+    <arg name="calibration" default="false"/>
+    <arg name="safety_distance" default="0.03"/>
+
+    <arg name="kinematics_solver" default="bio_ik/BioIKKinematicsPlugin"/>
+
+    <!-- ROBOT SETUP -->
+    <include file="$(find robot_arm_tools)/launch/Setup_$(arg robot_name).launch">
+        <arg name="tool_name" value="$(arg tool_name)"/>
+        <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="calibration" value="$(arg calibration)"/>
+        <arg name="safety_distance" value="$(arg safety_distance)"/>
+        <arg name="kinematics_solver" value="$(arg kinematics_solver)"/>
+    </include>
+
+    <!-- FAKE SENSOR SETUP -->
+    <!--<param name="measurementServerName" value="/ok_server"/>
+    <param name="measurementServerStorageFolder" value="/tmp/ScanExample/"/>
+    <param name="measurementServerDisplay" value="true"/>
+    <node pkg="robot_arm_tools" name="OKMeasurementServer" type="OKMeasurementServer" output="screen"/>-->
+
+    <!-- MAIN NODE -->
+    <arg name="constrained_yaw" default="true"/>
+    <arg name="visibility_constraint" default="true"/>
+    <param name="constrainedYaw" value="$(arg constrained_yaw)"/>
+    <param name="visibilityConstraint" value="$(arg visibility_constraint)"/>
+
+    <node pkg="robot_arm_tools" type="robot_arm_tools_example_scan_node" name="robot_arm_tools_example_scan_node" output="screen" required="true"/>
+
+    <!-- RVIZ --> 
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find robot_arm_tools)/config/RViz/DefaultSetup.rviz"/>
+
+</launch>

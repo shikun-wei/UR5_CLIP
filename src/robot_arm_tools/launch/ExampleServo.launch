@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<launch>
+
+    <!-- GENERAL ARGUMENTS -->
+    <arg name="robot_name" default="ur10e"/>
+    <arg name="tool_name" default="none"/>
+    <arg name="simulation" default="false"/>
+    <arg name="calibration" default="false"/>
+    <arg name="safety_distance" default="0.03"/>
+
+    <!-- SERVO ARGUMENTS -->
+    <!-- Remark : Velocity mode only compatible with UR robots -->
+    <arg name="servo_mode" default="position"/>
+    <param name="servoMode" value="$(arg servo_mode)"/>
+
+    <!-- ROBOT SETUP -->
+    <include file="$(find robot_arm_tools)/launch/Setup_$(arg robot_name).launch">
+        <arg name="tool_name" value="none" if="$(arg simulation)"/>
+        <arg name="tool_name" value="$(arg tool_name)" unless="$(arg simulation)"/>
+        <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="calibration" value="$(arg calibration)"/>
+        <arg name="gazebo" value="true" if="$(arg simulation)"/>
+        <arg name="gazebo_hardware_interface" value="$(arg servo_mode)" if="$(eval 'ur' in arg('robot_name'))"/>   
+        <arg name="use_gazebo_gui" value="true" if="$(arg simulation)"/>
+        <arg name="safety_distance" value="$(arg safety_distance)"/>
+    </include>
+
+    <arg name="base_link_name" default="base_link"/>
+    <param name="baseLinkName" value="$(arg base_link_name)"/>
+
+    <rosparam command="load" file="$(find robot_arm_tools)/config/servo/$(arg robot_name)_controller.yaml" subst_value="true"/>
+    <node name="ros_control_stopped_spawner_servo" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="--stopped joint_group_pos_controller" if="$(eval arg('servo_mode') == 'position')"/>
+    <node name="ros_control_stopped_spawner_servo" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="--stopped joint_group_vel_controller" if="$(eval arg('servo_mode') == 'velocity')"/>
+
+    <!-- MAIN NODE -->
+    <node pkg="robot_arm_tools" type="robot_arm_tools_example_servo_node" name="robot_arm_tools_example_servo_node" output="screen"/>
+
+     <!-- MOVEIT SERVO INTERFACE -->
+    <node name="servo_server" pkg="moveit_servo" type="servo_server" output="screen" >
+        <rosparam file="$(find robot_arm_tools)/config/servo/servo_simulated_config_$(arg servo_mode).yaml" command="load" />
+        <param name="use_gazebo" value="true" if="$(arg simulation)"/>
+        
+        <remap from="~move_group_name" to="groupName"/>
+        <remap from="~planning_frame" to="baseLinkName"/>
+        <remap from="~ee_frame_name" to="endEffectorName"/>
+        <remap from="~robot_link_command_frame" to="baseLinkName"/>
+    </node>
+
+    <!--<node name="spacenav_node" pkg="spacenav_node" type="spacenav_node" />
+    <node name="spacenav_to_twist" pkg="moveit_servo" type="spacenav_to_twist" output="screen" />-->
+
+    <!-- RVIZ --> 
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find robot_arm_tools)/config/RViz/InteractiveServoSetup.rviz"/>
+
+</launch>

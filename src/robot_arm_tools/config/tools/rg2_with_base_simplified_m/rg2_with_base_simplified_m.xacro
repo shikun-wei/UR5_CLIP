@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="rg2_with_base_simplified_m">
+  <!-- safety_distance: Minimum safety distance in [m] by which the collision volumes are expanded and which is enforced during robot motions -->
+  <xacro:macro name="rg2_with_base_simplified_m" params="connected_to:='' robot_name:='' rpy:='0 0 0' xyz:='0 0 0' safety_distance:=0">
+
+    <xacro:unless value="${connected_to == ''}">
+      <joint name="${robot_name}_rg2_with_base_simplified_m_joint" type="fixed">
+        <parent link="${connected_to}"/>
+        <child link="${robot_name}_rg2_with_base_simplified_m"/>
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+      </joint>
+    </xacro:unless>
+
+    <link name="${robot_name}_rg2_with_base_simplified_m">
+      <visual>
+        <geometry>
+          <mesh filename="file://$(find robot_arm_tools)/config/tools/rg2_with_base_simplified_m/rg2_with_base_simplified_m.stl"/>
+        </geometry>
+      </visual>
+			<collision>
+				<origin xyz="0.094 0.065 0.14" rpy="-0.136 1.566 1.892"/>
+				<geometry>
+					<box size="${0.039+safety_distance} ${0.048+safety_distance} ${0.126+safety_distance}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.034 0.065 0.14" rpy="1.083 -1.571 0.0"/>
+				<geometry>
+					<box size="${0.039+safety_distance} ${0.052+safety_distance} ${0.129+safety_distance}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.09 0.193 0.184" rpy="-2.133 -1.551 0.573"/>
+				<geometry>
+					<box size="${0.036+safety_distance} ${0.058+safety_distance} ${0.143+safety_distance}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.034 0.193 0.096" rpy="2.4 1.556 -2.307"/>
+				<geometry>
+					<box size="${0.037+safety_distance} ${0.057+safety_distance} ${0.143+safety_distance}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.034 0.193 0.184" rpy="-2.137 1.551 -0.572"/>
+				<geometry>
+					<box size="${0.036+safety_distance} ${0.057+safety_distance} ${0.143+safety_distance}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.082 0.173 0.134" rpy="1.571 0.0 3.142"/>
+				<geometry>
+					<box size="${0.039+safety_distance} ${0.064+safety_distance} ${0.104+safety_distance}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.111 0.193 0.133" rpy="-1.571 0.158 -0.001"/>
+				<geometry>
+					<box size="${0.025+safety_distance} ${0.067+safety_distance} ${0.143+safety_distance}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.087 0.193 0.09" rpy="1.935 1.539 0.391"/>
+				<geometry>
+					<box size="${0.025+safety_distance} ${0.053+safety_distance} ${0.144+safety_distance}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.011 0.193 0.14" rpy="1.571 0.0 3.142"/>
+				<geometry>
+					<box size="${0.02+safety_distance} ${0.052+safety_distance} ${0.143+safety_distance}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="0.043 0.173 0.14" rpy="1.571 0.0 3.142"/>
+				<geometry>
+					<box size="${0.039+safety_distance} ${0.052+safety_distance} ${0.104+safety_distance}"/>
+				</geometry>
+			</collision>
+    </link>
+    
+  </xacro:macro>
+</robot>

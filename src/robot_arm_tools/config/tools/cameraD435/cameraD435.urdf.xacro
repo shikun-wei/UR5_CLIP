@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="cameraD435">
+
+    <xacro:arg name="robot_name" default="panda" />
+    <xacro:arg name="safety_distance" default="0.03"/>
+    <xacro:arg name="robot_flange_link" default="panda_link8"/>
+
+    <xacro:include filename="$(find robot_arm_tools)/config/tools/cameraD435/cameraD435.xacro"/>
+    <xacro:cameraD435 robot_name="$(arg robot_name)" xyz="0.0 0.0 0.03305" rpy="0.0 0.0 0.0" connected_to="$(arg robot_flange_link)" safety_distance="$(arg safety_distance)"/>
+</robot>

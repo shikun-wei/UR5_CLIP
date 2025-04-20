@@ -1,0 +1,29 @@
+<launch>
+
+    <!-- GENERAL ARGUMENTS -->
+    <arg name="robot_name" default="panda"/>
+    <arg name="tool_name" default="cameraD435"/>
+    <arg name="simulation" default="true"/>
+    <arg name="calibration" default="false"/>
+    <arg name="safety_distance" default="0.03"/>
+
+    <!-- ROBOT SETUP -->
+    <include file="$(find robot_arm_tools)/launch/Setup_$(arg robot_name).launch">
+        <arg name="tool_name" value="$(arg tool_name)"/>
+        <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="calibration" value="$(arg calibration)"/>
+        <arg name="safety_distance" value="$(arg safety_distance)"/>
+    </include>
+
+    <!-- SENSOR SETUP -->
+    <include file="$(find robot_arm_tools)/launch/Sensor.launch" pass_all_args="true">
+        <arg name="sensor_type" value="point_cloud"/>
+        <arg name="sensor_tf" value="camera_link"/>
+        <arg name="sensor_topic" value="/point_cloud"/>
+        <arg name="sensor_filter" value="false"/>
+    </include>
+
+    <!-- RVIZ --> 
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find robot_arm_tools)/config/RViz/DefaultSetup.rviz"/>  <!-- Customisable RViz configuration -->
+
+</launch>

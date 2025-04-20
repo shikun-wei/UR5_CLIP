@@ -1,0 +1,36 @@
+PersistentPRM:
+  type: geometric::PRM
+  multi_query_planning_enabled: true
+  store_planner_data: true
+  load_planner_data: true
+  planner_data_path: /tmp/roadmap.graph
+PersistentPRMstar:
+  type: geometric::PRMstar
+  multi_query_planning_enabled: true
+  store_planner_data: true
+  load_planner_data: true
+  planner_data_path: /tmp/roadmap.graph
+PersistentLazyPRM:
+  type: geometric::LazyPRM
+  multi_query_planning_enabled: true
+  store_planner_data: true
+  load_planner_data: true
+  planner_data_path: /tmp/roadmap.graph
+PersistentLazyPRMstar:
+  type: geometric::LazyPRMstar
+  multi_query_planning_enabled: true
+  store_planner_data: true
+  load_planner_data: true
+  planner_data_path: /tmp/roadmap.graph
+PersistentSPARS:
+  type: geometric::SPARS
+  multi_query_planning_enabled: true
+  store_planner_data: true
+  load_planner_data: true
+  planner_data_path: /tmp/roadmap.graph
+PersistentSPARStwo:
+  type: geometric::SPARStwo
+  multi_query_planning_enabled: true
+  store_planner_data: true
+  load_planner_data: true
+  planner_data_path: /tmp/roadmap.graph

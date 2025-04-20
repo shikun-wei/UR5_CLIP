@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="rg2_with_base_m">
+  <!-- safety_distance: Minimum safety distance in [m] by which the collision volumes are expanded and which is enforced during robot motions -->
+  <xacro:macro name="rg2_with_base_m" params="connected_to:='' robot_name:='' rpy:='0 0 0' xyz:='0 0 0' safety_distance:=0">
+
+    <xacro:unless value="${connected_to == ''}">
+      <joint name="${robot_name}_rg2_with_base_m_joint" type="fixed">
+        <parent link="${connected_to}"/>
+        <child link="${robot_name}_rg2_with_base_m"/>
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+      </joint>
+    </xacro:unless>
+
+    <link name="${robot_name}_rg2_with_base_m">
+      <visual>
+        <geometry>
+          <mesh filename="file://$(find robot_arm_tools)/config/tools/rg2_with_base_m/rg2_with_base_m.stl"/>
+        </geometry>
+      </visual>
+    </link>
+    
+  </xacro:macro>
+</robot>

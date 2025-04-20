@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="marker3D_offset">
+  <!-- safety_distance: Minimum safety distance in [m] by which the collision volumes are expanded and which is enforced during robot motions -->
+  <xacro:macro name="marker3D_offset" params="connected_to:='' robot_name:='' rpy:='0 0 0' xyz:='0 0 0' safety_distance:=0">
+
+    <xacro:unless value="${connected_to == ''}">
+      <joint name="${robot_name}_marker3D_offset_joint" type="fixed">
+        <parent link="${connected_to}"/>
+        <child link="${robot_name}_marker3D_offset"/>
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+      </joint>
+    </xacro:unless>
+
+    <link name="${robot_name}_marker3D_offset">
+      <visual>
+        <geometry>
+          <mesh filename="file://$(find robot_arm_tools)/config/tools/marker3D_offset/marker3D_offset.stl"/>
+        </geometry>
+      </visual>
+			<collision>
+				<origin xyz="0.0 0.0 0.035" rpy="0.0 0.0 0.0"/>
+				<geometry>
+					<cylinder radius="${0.12+safety_distance}" length="${0.07+safety_distance}"/>
+				</geometry>
+			</collision>
+    </link>
+    
+  </xacro:macro>
+</robot>

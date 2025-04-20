@@ -1,0 +1,216 @@
+base:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: 0.4
+    y: 0.0
+    z: -0.2
+  robot_base_collisions: false
+  size:
+    dx: 1.0
+    dy: 0.72
+    dz: 0.35
+  type: box
+box5:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.625
+    y: 0.41
+    z: 0.46
+  robot_base_collisions: false
+  size:
+    dx: 0.35
+    dy: 0.19
+    dz: 0.14
+  type: box
+control_box:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: 0.69
+    y: 0.0
+    z: 0.15
+  robot_base_collisions: false
+  size:
+    dx: 0.32
+    dy: 0.52
+    dz: 0.4
+  type: box
+desk:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.825
+    y: 0.0
+    z: 0.035
+  robot_base_collisions: false
+  size:
+    dx: 0.75
+    dy: 1.19
+    dz: 0.75
+  type: box
+dynamic_box_0:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.8831
+    y: -0.3494
+    z: 0.55
+  robot_base_collisions: false
+  size: &id001
+    dx: 0.01
+    dy: 0.01
+    dz: 0.15
+  type: box
+dynamic_box_1:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.6601
+    y: -0.1957
+    z: 0.55
+  robot_base_collisions: false
+  size: *id001
+  type: box
+dynamic_box_2:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.6623
+    y: -0.0102
+    z: 0.55
+  robot_base_collisions: false
+  size: *id001
+  type: box
+dynamic_box_3:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.835
+    y: -0.0001
+    z: 0.55
+  robot_base_collisions: false
+  size: *id001
+  type: box
+dynamic_box_4:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.6672
+    y: -0.0192
+    z: 0.55
+  robot_base_collisions: false
+  size: *id001
+  type: box
+dynamic_box_5:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.6709
+    y: -0.0184
+    z: 0.55
+  robot_base_collisions: false
+  size: *id001
+  type: box
+dynamic_box_6:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.6624
+    y: -0.1952
+    z: 0.55
+  robot_base_collisions: false
+  size: *id001
+  type: box
+dynamic_box_7:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.8849
+    y: -0.3472
+    z: 0.55
+  robot_base_collisions: false
+  size: *id001
+  type: box
+dynamic_box_8:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: -0.8387
+    y: -0.0012
+    z: 0.55
+  robot_base_collisions: false
+  size: *id001
+  type: box
+husky_cage_front:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: 0.95
+    y: 0.0
+    z: -0.15
+  robot_base_collisions: false
+  size:
+    dx: 0.01
+    dy: 0.72
+    dz: 0.4
+  type: box
+husky_cage_left:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: 0.4
+    y: 0.4
+    z: -0.15
+  robot_base_collisions: false
+  size:
+    dx: 1.0
+    dy: 0.01
+    dz: 0.4
+  type: box
+husky_cage_right:
+  collisions: true
+  pose:
+    rx: 0.0
+    ry: 0.0
+    rz: 0.0
+    x: 0.4
+    y: -0.4
+    z: -0.15
+  robot_base_collisions: false
+  size:
+    dx: 1.0
+    dy: 0.01
+    dz: 0.4
+  type: box

@@ -1,0 +1,13 @@
+# Define the pose waypoints
+float64[] joints_values_waypoints
+
+---
+# Define the result
+bool result
+moveit_msgs/MoveItErrorCodes error_code
+
+---
+# Define a feedback message
+string state
+int64 last_target
+int64 next_target

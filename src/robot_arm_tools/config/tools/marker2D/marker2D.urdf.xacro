@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="marker2D">
+
+    <xacro:arg name="robot_name" default="panda" />
+    <xacro:arg name="safety_distance" default="0.03"/>
+    <xacro:arg name="robot_flange_link" default="panda_link8"/>
+
+    <xacro:include filename="$(find robot_arm_tools)/config/tools/marker2D/marker2D.xacro"/>
+    <xacro:marker2D robot_name="$(arg robot_name)" xyz="0.0 0.0 0.0" rpy="0.0 0.0 -0.7854" connected_to="$(arg robot_flange_link)" safety_distance="$(arg safety_distance)"/>
+</robot>

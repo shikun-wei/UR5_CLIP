@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<launch>
+
+    <!-- GENERAL ARGUMENTS -->
+    <arg name="robot_name" default="panda"/>
+    <arg name="tool_name" default="none"/>
+    <arg name="simulation" default="true"/>
+    <arg name="calibration" default="false"/>
+    <arg name="safety_distance" default="0.03"/>
+
+    <!-- ROBOT SETUP -->
+    <include file="$(find robot_arm_tools)/launch/Setup_$(arg robot_name).launch">
+        <arg name="tool_name" value="$(arg tool_name)"/>
+        <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="calibration" value="$(arg calibration)"/>
+        <arg name="safety_distance" value="$(arg safety_distance)"/>
+    </include>
+
+    <!-- ACTIONS -->
+    <node pkg="robot_arm_tools" type="robot_arm_tools_actions" name="robot_arm_tools_actions" output="screen"/>
+
+    <!-- RVIZ --> 
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find robot_arm_tools)/config/RViz/DefaultSetup.rviz"/>  <!-- Customisable RViz configuration -->
+
+</launch>

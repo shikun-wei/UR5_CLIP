@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<launch>
+
+    <!-- GENERAL ARGUMENTS -->
+    <arg name="robot_name" default="panda"/>
+    <arg name="simulation" default="true"/>
+    <arg name="safety_distance" default="0.03"/>
+
+    <!-- ROBOT SETUP -->
+    <include file="$(find robot_arm_tools)/launch/Setup_$(arg robot_name).launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="tool_name" value="gripper" />
+        <arg name="safety_distance" value="$(arg safety_distance)"/>
+    </include>
+
+    <!-- MAIN NODE -->
+    <node pkg="robot_arm_tools" type="robot_arm_tools_example_gripper_node" name="robot_arm_tools_example_gripper_node" output="screen" required="true"/>
+
+    <!-- RVIZ --> 
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find robot_arm_tools)/config/RViz/DefaultSetup.rviz"/>  <!-- Customisable RViz configuration -->
+
+</launch>

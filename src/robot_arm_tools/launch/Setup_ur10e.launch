@@ -1,0 +1,134 @@
+<?xml version="1.0" ?>
+<launch>
+    <!--ADD ONS PARAMETERS -->
+    <arg name="use_rviz_gui" default="false"/>
+    <arg name="use_gazebo_gui" default="false"/>
+
+    <!-- ROBOT PARAMETERS -->
+    <param name="robotName" value="ur10e"/>
+    <param name="groupName" value="manipulator"/>
+    <param name="collisionBaseLinksNames" type="yaml" value="[base_link]"/>
+
+    <arg name="initial_configuration_name" value="up"/>
+    <param name="initialConfigurationName" value="$(arg initial_configuration_name)"/>
+
+    <arg name="kinematics_solver" default="bio_ik/BioIKKinematicsPlugin"/>
+
+    <arg name="planner_name" default="BiTRRT"/>
+    <param name="plannerName" value="$(arg planner_name)"/>
+    <arg name="planner_objective" default="PathLengthOptimizationObjective"/>
+    <param name="plannerObjective" value="$(arg planner_objective)"/>
+    <arg name="planning_time" default="5.0"/>
+    <param name="planningTime" value="$(arg planning_time)"/>
+
+    <!-- ROBOT SAFETY PARAMETERS -->
+    <arg name="safety_distance" default="0.03"/>
+    <rosparam file="$(find robot_arm_tools)/config/robots/ur_soft_joints_limits.yaml" command="load" ns="robot_description_planning"/>
+
+    <!-- ROBOT TOOL PARAMETERS -->
+    <arg name="tool_name" default="none"/>
+    <param name="toolName" value="$(arg tool_name)"/>
+    
+    <arg name="end_effector_name" value="ur10e_$(arg tool_name)" unless="$(eval arg('tool_name') == 'none')"/>
+    <arg name="end_effector_name" value="tool0" if="$(eval arg('tool_name') == 'none')"/> 
+    <param name="endEffectorName" value="$(arg end_effector_name)"/>
+
+    <!-- ROBOT CALIBRATION PARAMETERS -->
+    <arg name="calibration" default="false"/>
+    <param name="calibration" value="$(arg calibration)"/>
+
+    <arg name="calibrated_model_file" default="" unless="$(arg calibration)"/> 
+    <arg name="calibrated_model_file" default="$(find robot_arm_calibration)/config/calibratedModels/ur10e_marker3D/naive_5/greedy/measurements/GN/CalibratedModel.yaml" if="$(arg calibration)"/>
+
+    <rosparam file="$(arg calibrated_model_file)" command="load" if="$(arg calibration)"/>
+    
+    <!-- EXECUTION PARAMETERS -->
+    <node pkg="robot_arm_tools" name="pause_button" type="pause_button"/>
+    <arg name="simulation" default="true"/>
+    <param name="simulation" value="$(arg simulation)"/>
+    <arg name="robot_ip" default="147.250.35.20" />
+    <param name="robotIP" value="$(arg robot_ip)"/>
+    <arg name="gazebo" default="false"/>
+
+    <!-- LOCALISATION PARAMETERS -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_0" args="0 0 0 0 0 0 world map" /> 
+    <node pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_1" args="0 0 0 0 0 0 world base_link" />
+
+    <!-- LAUNCH INCLUDES -->
+
+    <!-- MoveIt based simulation -->
+    <group if="$(eval arg('simulation') and not arg('gazebo'))">
+        <include file="$(find ur10e_moveit_config)/launch/demo.launch" pass_all_args="true">
+            <arg name="use_rviz" value="$(arg use_rviz_gui)"/>
+        </include>
+
+        <param name="/move_group/initial" type="yaml" value="[{group: manipulator, pose: $(arg initial_configuration_name)}]"/>
+    </group>
+
+    <!-- Real hardware execution (do not forget to start ROS on the robot) -->
+    <group unless="$(arg simulation)">
+        <include file="$(find ur_robot_driver)/launch/ur10e_bringup.launch">
+            <arg name="robot_ip" value="$(arg robot_ip)" />
+            <arg name="kinematics_config" value="$(find robot_arm_tools)/config/robots/ur10e_calibration.yaml"/>
+        </include>
+
+        <rosparam param="controller_stopper/consistent_controllers">
+            - "joint_state_controller"
+            - "speed_scaling_state_controller"
+            - "force_torque_sensor_controller"
+            - "robot_status_controller"
+            - "scaled_pos_joint_traj_controller"
+        </rosparam>
+
+        <include file="$(find ur10e_moveit_config)/launch/moveit_planning_execution.launch">
+            <arg name="sim" value="false"/>
+        </include>
+
+        <node name="RViz" pkg="rviz" type="rviz" if="$(arg use_rviz_gui)"/>
+    </group>
+
+    <!-- Gazebo based simulation -->
+    <arg name="gazebo_hardware_interface" default="position"/>
+    <group if="$(eval arg('simulation') and arg('gazebo'))">
+
+        <include file="$(find ur_gazebo)/launch/ur10e_bringup.launch" pass_all_args="true">
+            <arg name="gui" value="$(arg use_gazebo_gui)"/>
+
+            <arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface" if="$(eval arg('gazebo_hardware_interface') == 'position')"/> 
+            <arg name="transmission_hw_interface" default="hardware_interface/VelocityJointInterface" if="$(eval arg('gazebo_hardware_interface') == 'velocity')"/><!-- Bypass forced UR effort interface, need to add pass_all_args="true" in <include file="$(arg robot_description_file)"> !-->
+
+            <arg name="controller_config_file" value="$(find ur_robot_driver)/config/ur10e_controllers.yaml"/>
+
+            <arg name="controllers" value="joint_state_controller pos_joint_traj_controller" if="$(eval arg('gazebo_hardware_interface') == 'position')"/> 
+            <arg name="controllers" value="joint_state_controller" if="$(eval arg('gazebo_hardware_interface') == 'velocity')"/>
+            
+            <arg name="stopped_controllers" value=""/> <!-- To avoid unavailable effort controller loading -->
+        </include>
+
+        <remap from="/scaled_pos_joint_traj_controller/follow_joint_trajectory" to="/pos_joint_traj_controller/follow_joint_trajectory"/>
+
+        <include file="$(find ur10e_moveit_config)/launch/moveit_planning_execution.launch">
+            <arg name="sim" value="false"/>
+        </include>
+
+        <node name="RViz" pkg="rviz" type="rviz" if="$(arg use_rviz_gui)"/>
+    </group>
+
+    <!-- Overwritting kinematics plugin for calibration -->
+    <!--<param name="robot_description_kinematics/manipulator/kinematics_solver" value="robot_kinematics_plugin" if="$(arg calibration)"/>-->
+    <param name="robot_description_kinematics/manipulator/kinematics_solver" value="$(arg kinematics_solver)"/>
+
+    <param name="robot_description_kinematics/manipulator/mode" value="gd_c_8"/>
+
+    <param name="robot_description_kinematics/manipulator/kinematics_solver_search_resolution" value="0.00001"/>  <!--Not used for bio_ik-->
+    <param name="robot_description_kinematics/manipulator/dpos" value="0.00001"/>  <!--Used for bio_ik-->
+    <param name="robot_description_kinematics/manipulator/drot" value="0.00001"/>  <!--Used for bio_ik-->
+    <param name="robot_description_kinematics/manipulator/dtwist" value="0.00001"/>  <!--Used for bio_ik-->
+
+    <param name="robot_description_kinematics/manipulator/kinematics_solver_timeout" value="1.0"/>
+
+    <!-- Overwritting robot_description and robot_description_semantic -->
+    <param name="robot_description" command="/bin/bash $(find robot_arm_tools)/scripts/GetRobotDescription.sh 'robot_arm_tools Setup_ur10e.launch simulation:=$(arg simulation) gazebo:=$(arg gazebo)' '$(find robot_arm_tools)/config/tools/$(arg tool_name)/$(arg tool_name).urdf.xacro robot_name:=ur10e safety_distance:=$(arg safety_distance)' '$(arg calibrated_model_file)'" unless="$(eval arg('tool_name') == 'none' and not arg('calibration'))"/>
+    <param name="robot_description_semantic" command="/bin/bash $(find robot_arm_tools)/scripts/GetRobotDescriptionSemantic.sh 'robot_arm_tools Setup_ur10e.launch simulation:=$(arg simulation) gazebo:=$(arg gazebo)' '$(find robot_arm_tools)/config/tools/$(arg tool_name)/$(arg tool_name).urdf.xacro robot_name:=ur10e safety_distance:=$(arg safety_distance)' '$(arg end_effector_name)' '$(arg calibrated_model_file)'" unless="$(eval arg('tool_name') == 'none' and not arg('calibration'))"/>
+
+</launch>

@@ -1,0 +1,8 @@
+<library path="lib/librobot_low_level">
+  <class type="PandaLowLevel" base_class_type="RobotLowLevel">
+    <description>Franka Emika Panda low level plugin</description>
+  </class>
+  <class type="URLowLevel" base_class_type="RobotLowLevel">
+    <description>Universal Robot low level plugin</description>
+  </class>
+</library>

@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="PUprobe2">
+
+    <xacro:arg name="robot_name" default="panda" />
+    <xacro:arg name="safety_distance" default="0.03"/>
+    <xacro:arg name="robot_flange_link" default="panda_link8"/>
+
+    <xacro:include filename="$(find robot_arm_tools)/config/tools/PUprobe2/PUprobe2.xacro"/>
+    <xacro:PUprobe2 robot_name="$(arg robot_name)" xyz="0.1163 -0.1163 0.0998" rpy="2.356 -1.571 0.0" connected_to="$(arg robot_flange_link)" safety_distance="$(arg safety_distance)"/>
+</robot>

@@ -1,0 +1,14 @@
+joint_group_pos_controller:
+  type: position_controllers/JointGroupPositionController
+  joints: &robot_joints
+    - $(arg robot_name)_joint1
+    - $(arg robot_name)_joint2
+    - $(arg robot_name)_joint3
+    - $(arg robot_name)_joint4
+    - $(arg robot_name)_joint5
+    - $(arg robot_name)_joint6
+    - $(arg robot_name)_joint7
+
+position_joint_trajectory_controller:
+  constraints:
+    stopped_velocity_tolerance: 0

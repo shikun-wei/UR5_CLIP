@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="microGRAS_reverse">
+
+    <xacro:arg name="robot_name" default="panda" />
+    <xacro:arg name="safety_distance" default="0.03"/>
+    <xacro:arg name="robot_flange_link" default="panda_link8"/>
+
+    <xacro:include filename="$(find robot_arm_tools)/config/tools/microGRAS_reverse/microGRAS_reverse.xacro"/>
+    <xacro:microGRAS_reverse robot_name="$(arg robot_name)" xyz="0.1749 -0.0581 0.0285" rpy="-1.5708 0.0 -0.7854" connected_to="$(arg robot_flange_link)" safety_distance="$(arg safety_distance)"/>
+</robot>

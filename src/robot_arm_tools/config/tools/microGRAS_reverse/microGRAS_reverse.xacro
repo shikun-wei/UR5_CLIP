@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="microGRAS_reverse">
+  <!-- safety_distance: Minimum safety distance in [m] by which the collision volumes are expanded and which is enforced during robot motions -->
+  <xacro:macro name="microGRAS_reverse" params="connected_to:='' robot_name:='' rpy:='0 0 0' xyz:='0 0 0' safety_distance:=0">
+
+    <xacro:unless value="${connected_to == ''}">
+      <joint name="${robot_name}_microGRAS_reverse_joint" type="fixed">
+        <parent link="${connected_to}"/>
+        <child link="${robot_name}_microGRAS_reverse"/>
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+      </joint>
+    </xacro:unless>
+
+    <link name="${robot_name}_microGRAS_reverse">
+      <visual>
+        <geometry>
+          <mesh filename="file://$(find robot_arm_tools)/config/tools/microGRAS_reverse/microGRAS_reverse.stl"/>
+        </geometry>
+      </visual>
+			<collision>
+				<origin xyz="0.003 -0.0 -0.076" rpy="3.142 0.0 -1.571"/>
+				<geometry>
+					<box size="${0.022+safety_distance/2} ${0.023+safety_distance/2} ${0.155+safety_distance/2}"/>
+				</geometry>
+			</collision>
+			<collision>
+				<origin xyz="-0.104 0.012 -0.084" rpy="1.6 0.003 1.483"/>
+				<geometry>
+					<box size="${0.03+safety_distance/2} ${0.065+safety_distance/2} ${0.195+safety_distance/2}"/>
+				</geometry>
+			</collision>
+    </link>
+    
+  </xacro:macro>
+</robot>

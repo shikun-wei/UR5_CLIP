@@ -1,0 +1,49 @@
+<launch>
+
+    <param name="robotPerception" value="true"/>
+
+    <arg name="sensor_type" default="point_cloud"/>
+    <arg name="sensor_tf" default="world"/>
+    <arg name="sensor_topic" default="/point_cloud"/>
+    <arg name="sensor_filter" default="true"/>
+
+    <!--<param name="move_group/octomap_frame" type="string" value="$(arg sensor_tf)"/>--> <!-- Not needed -> Already in sensor topic msgs -->
+    <param name="move_group/octomap_resolution" type="double" value="0.01"/>
+    <param name="move_group/max_range" type="double" value="1.0"/>
+    <param name="robot_description_planning/shape_transform_cache_lookup_wait_time" value="0.5"/> 
+
+    <!-- No filtering or no point cloud -->
+    <group unless="$(eval arg('sensor_type') == 'point_cloud' and arg('sensor_filter'))">
+        <arg name="topic_name" value="$(arg sensor_topic)"/>
+        <rosparam command="load" file="$(find robot_arm_tools)/config/sensor/sensor_$(arg sensor_type).yaml" ns="move_group" subst_value="true"/>
+    </group>
+
+    <!-- Filtering + point cloud -->
+    <group if="$(eval arg('sensor_type') == 'point_cloud' and arg('sensor_filter'))">
+
+        <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen"/>
+
+        <!-- Downsampling filter -->
+        <node pkg="nodelet" type="nodelet" name="voxel_downsampling_filter" args="load pcl/VoxelGrid /pcl_manager" output="screen">
+            <remap from="~input" to="$(arg sensor_topic)"/>
+            <rosparam subst_value="true">
+                leaf_size: 0.005
+            </rosparam>
+        </node>
+
+        <!-- Radius outliers filter -->
+        <node pkg="nodelet" type="nodelet" name="radius_outlier_filter" args="load pcl/RadiusOutlierRemoval /pcl_manager" output="screen">
+            <remap from="~input" to="/voxel_downsampling_filter/output" />
+            <rosparam subst_value="true">
+                radius_search: 0.05
+                min_neighbors: 150
+            </rosparam>
+        </node>
+
+        <!-- "Remap" topic name in configuration file -->
+        <arg name="topic_name" value="/radius_outlier_filter/output"/>
+        <rosparam command="load" file="$(find robot_arm_tools)/config/sensor/sensor_$(arg sensor_type).yaml" ns="move_group" subst_value="true"/>
+
+    </group> 
+
+</launch>
